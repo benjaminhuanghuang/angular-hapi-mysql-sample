@@ -11,13 +11,19 @@ install dev
 ```
 {
     "presets": [
-        "@babel/preset-env"
+      "@babel/preset-env"
     ],
     "plugins": [
-        [
-            "@babel/plugin-transform-runtime",
-            { "regenerator": true }
-        ]
+      [
+        "@babel/plugin-transform-runtime",
+        { "regenerator": true }
+      ]
     ]
 }
+```
+
+
+## Run
+```
+  npx babel-node src/server
 ```
