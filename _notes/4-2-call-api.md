@@ -11,11 +11,21 @@ app.module.ts
 ```
 
 ## Rxjs: Async call
+```
+  npm i rxjs
+```
+
 instead of return data directly, the methond in the service returns a Observable<T>
 ```
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, observable } from 'rxjs';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json',
+  })
+};
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +38,14 @@ export class ListingsService {
 
   getListings(): Observable<Listing[]> {
     return this.http.get<Listing[]>('/api/listings');
+  }
+
+  addViewToListing(id: string): Observable<Listing> {
+    return this.http.post<Listing>(
+      `/api/listings/${id}/add-view`,
+      {},
+      httpOptions,
+    );
   }
 }
 ```
@@ -42,3 +60,38 @@ export class ListingsService {
 }
 ```
 
+
+## Loading status
+template
+```
+<div class="content-box" *ngIf="!isLoading">
+</div>
+<div class="content-box" *ngIf="isLoading">
+    <h3>Loading...</h3>
+</div>
+```   
+
+component
+```
+export class MyComponent implements OnInit {
+  isLoading: boolean = true;
+  listing: Listing;
+
+  constructor(
+    private route: ActivatedRoute,
+    private listingsService: ListingsService,
+  ) { }
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    this.listingsService.getListingById(id)
+      .subscribe(listing => {
+        this.listing = listing;    // <-- change loading status
+        this.isLoading = false;
+      });
+    this.listingsService.addViewToListing(id)
+      .subscribe(() => console.log('Views updated!'));
+  }
+
+}
+```
